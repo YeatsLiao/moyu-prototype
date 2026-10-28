@@ -3,37 +3,68 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>摸鱼战绩计算器 · 历史战绩</title>
+<title>历史战绩 · 摸鱼战绩计算器</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body data-page="history">
 <div class="stage"><div class="phone"><div class="screen">
   <main class="page">
-    <div class="statusbar"><span>9:41</span><span class="capsule">摸鱼战绩计算器 ···</span></div>
+    <div class="statusbar"><span>9:41</span><span class="capsule">摸鱼中 ···</span></div>
 
-    <div class="page-head rise"><h1>历史战绩</h1><span class="date">职业生涯档案</span></div>
+    <div class="page-head rise"><h1>战绩</h1></div>
 
-    <!-- 等级卡 -->
     <div class="card level-card rise">
+      <div class="tape"></div>
       <div class="lv-icon" id="lvIcon"></div>
       <div style="flex:1;min-width:0;">
         <div class="lv-name" id="lvName">摸鱼新手</div>
-        <div class="lv-range" id="lvTotal">累计 ¥0.00</div>
+        <div class="lv-range" id="lvTotal">¥0 / ¥10</div>
         <div class="bar"><i id="lvBar" style="width:0%"></i></div>
-        <div class="lv-next" id="lvNext"></div>
+      </div>
+      <button class="lv-info" id="btnLvInfo" title="等级说明">?</button>
+    </div>
+
+    <!-- 日 / 周 / 月 -->
+    <div class="seg seg-sm range-seg rise" id="rangeSeg">
+      <button data-range="day">日</button>
+      <button data-range="week">周</button>
+      <button data-range="month">月</button>
+    </div>
+
+    <div class="stat-row rise">
+      <div class="stat"><div class="s-v" id="mHours">0<small>h</small></div><div class="s-k">时长</div></div>
+      <div class="stat"><div class="s-v hi" id="mMoney">¥0</div><div class="s-k">收益</div></div>
+      <div class="stat"><div class="s-v" id="mCups">0<small>杯</small></div><div class="s-k">奶茶</div></div>
+    </div>
+
+    <div class="cmp rise" id="cmpLine"></div>
+
+    <!-- 月历 -->
+    <div class="cal rise">
+      <div class="cal-head">
+        <button class="cal-nav" id="calPrev" aria-label="上个月">‹</button>
+        <div class="cal-title" id="calTitle">10月<small>本月</small></div>
+        <button class="cal-nav" id="calNext" aria-label="下个月" disabled>›</button>
+      </div>
+      <div class="cal-week"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-legend"><i class="lg1"></i><i class="lg2"></i><i class="lg3"></i><span>摸得越多越黄</span></div>
+    </div>
+
+    <div class="card cal-detail rise" id="calDetail"></div>
+  </main>
+
+  <!-- 等级说明 -->
+  <div class="modal-mask" id="lvModal">
+    <div class="modal modal-wide">
+      <div class="tape"></div>
+      <h3>等级说明</h3>
+      <div class="lv-list" id="lvList"></div>
+      <div class="m-actions" style="margin-top:14px;">
+        <button class="btn-big secondary" id="lvClose">知道了</button>
       </div>
     </div>
-
-    <!-- 本月累计 -->
-    <div class="stat-row rise">
-      <div class="stat"><div class="s-v" id="mHours">0<small> 小时</small></div><div class="s-k">本月摸鱼时长</div></div>
-      <div class="stat"><div class="s-v neon-text" id="mMoney">¥ 0.00</div><div class="s-k">本月摸鱼收益</div></div>
-      <div class="stat"><div class="s-v" id="mDays">0<small> 天</small></div><div class="s-k">本月出勤摸鱼</div></div>
-    </div>
-
-    <div class="sec-title rise">每日战绩</div>
-    <div id="dayList"></div>
-  </main>
+  </div>
 
   <nav class="tabbar">
     <a class="tab" data-nav="home" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M9 2h6"/></svg><span>首页</span></a>

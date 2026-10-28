@@ -1,49 +1,66 @@
 /* ============ mock.js · 唯一数据源 ============
- * 所有页面从这里读数据；金额由"分钟数 × 当前薪资分薪"动态计算，
- * 改设置页的薪资后，历史战绩金额会联动变化（原型演示效果）。
- * TODO: 接真实后端时替换为 GET /api/history 等接口，保持返回结构不变。
+ * 金额由"分钟数 × 当前薪资分薪"动态计算；改设置页薪资后，
+ * 历史金额、等级、周/月对比会联动重算（原型演示效果）。
+ * TODO: 接真实后端时替换为 GET /api/history?range=day|week|month，返回结构不变。
  */
 
 const TYPES = [
-  { id:'toilet', name:'带薪如厕', coef:1.2, desc:'肉身离场，风险溢价 +20%',      icon:'door'   },
-  { id:'daze',   name:'工位发呆', coef:1.0, desc:'人在工位，魂在峡谷',          icon:'brain'  },
-  { id:'coffee', name:'咖啡回血', coef:0.8, desc:'名为摸鱼，实为续命加班',      icon:'coffee' },
-  { id:'scroll', name:'划水刷帖', coef:1.1, desc:'手指在滑，KPI 在摆',          icon:'scroll' },
+  { id:'toilet', name:'带薪如厕', coef:1.2, icon:'door'   },
+  { id:'daze',   name:'工位发呆', coef:1.0, icon:'brain'  },
+  { id:'coffee', name:'咖啡回血', coef:0.8, icon:'coffee' },
+  { id:'scroll', name:'划水刷帖', coef:1.1, icon:'scroll' },
 ];
 
 const SCHEMES = [
-  { id:'double', name:'双休',   days:21.75, sub:'周末双休 · 标准打工人' },
-  { id:'bigsm',  name:'大小周', days:23.75, sub:'一大一小 · 间歇性坚强' },
-  { id:'single', name:'单休',   days:25.75, sub:'月休四天 · 福报体验卡' },
+  { id:'double', name:'双休',   days:21.75 },
+  { id:'bigsm',  name:'大小周', days:23.75 },
+  { id:'single', name:'单休',   days:25.75 },
 ];
 
-/* 等级：按累计摸鱼总收益判定，只升不降 */
+/* 等级：按累计摸鱼总收益判定，只升不降（阈值按月薪 1w、每天摸 1~2 小时的量级设定） */
 const LEVELS = [
-  { name:'摸鱼新手',     min:0,   icon:'fish'    },
-  { name:'摸鱼老油条',   min:10,  icon:'fish'    },
-  { name:'鱼塘塘主',     min:50,  icon:'crown'   },
-  { name:'带薪休假大师', min:200, icon:'palmtree'},
-  { name:'摸鱼宗师',     min:500, icon:'dragon'  },
+  { name:'摸鱼新手',     min:0,    icon:'fish',     tip:'刚学会偷偷看一眼手机' },
+  { name:'摸鱼老油条',   min:300,  icon:'fish',     tip:'摸得理直气壮，脸不红' },
+  { name:'鱼塘塘主',     min:1500, icon:'crown',    tip:'整层楼的鱼都归你管' },
+  { name:'带薪休假大师', min:4000, icon:'palmtree', tip:'上班约等于带薪休假' },
+  { name:'摸鱼宗师',     min:8000, icon:'dragon',   tip:'你不在摸鱼，你就是鱼' },
 ];
 
-/* 历史累计基数（本月之前攒下的家业），用于等级判定 */
-const BASE_TOTAL = 163.40;
+/* 历史累计基数（本月之前攒下的家业） */
+const BASE_TOTAL = 615.00;
 
-/* 过去战绩：只存分钟数与类型，金额动态换算 */
-const PAST_DAYS = [
-  { date:'10-27', weekday:'周二', minutes:126, types:['scroll','toilet'] },
-  { date:'10-26', weekday:'周一', minutes:152, types:['daze','scroll'] },
-  { date:'10-25', weekday:'周日', minutes:0,   types:[] },
-  { date:'10-24', weekday:'周六', minutes:0,   types:[] },
-  { date:'10-23', weekday:'周五', minutes:98,  types:['toilet','coffee'] },
-  { date:'10-22', weekday:'周四', minutes:173, types:['scroll','daze','toilet'] },
-  { date:'10-21', weekday:'周三', minutes:87,  types:['coffee'] },
-  { date:'10-20', weekday:'周二', minutes:141, types:['daze','scroll'] },
-  { date:'10-19', weekday:'周一', minutes:64,  types:['toilet'] },
-  { date:'10-16', weekday:'周五', minutes:188, types:['scroll','scroll','toilet'] },
-  { date:'10-15', weekday:'周四', minutes:112, types:['daze'] },
-  { date:'10-14', weekday:'周三', minutes:95,  types:['coffee','scroll'] },
-];
+const PAD = n => String(n).padStart(2,'0');
+const WD  = ['周日','周一','周二','周三','周四','周五','周六'];
+
+/* 最近 60 天（不含今天）的确定性战绩：工作日摸鱼，周末归零，偶尔请假
+ * back = 距今天数（1 = 昨天），用于取"最近 7 天 / 上一周"等区间 */
+const PAST_DAYS = (() => {
+  const arr = [];
+  const base = new Date(); base.setHours(0,0,0,0);
+  for (let i = 1; i <= 60; i++){
+    const d = new Date(base.getTime() - i * 86400000);
+    const dow = d.getDay();
+    const seed = d.getDate() * 37 + d.getMonth() * 11 + i * 7;
+    let minutes = 0;
+    if (dow !== 0 && dow !== 6 && seed % 17 !== 0) minutes = 45 + (seed * 13) % 155;
+    if (i === 1 && minutes === 0) minutes = 95;   /* 保证昨天有战绩，演示环比有基准 */
+    const types = [];
+    if (minutes){
+      const n = Math.min(3, 1 + Math.floor(minutes / 80));
+      for (let k = 0; k < n; k++) types.push(TYPES[(seed + k * 3) % TYPES.length].id);
+    }
+    arr.push({
+      back: i,
+      iso: `${d.getFullYear()}-${PAD(d.getMonth()+1)}-${PAD(d.getDate())}`,
+      date: `${PAD(d.getMonth()+1)}-${PAD(d.getDate())}`,
+      weekday: WD[dow],
+      dow,
+      minutes,
+      types,
+    });
+  }
+  return arr;
+})();
 
 /* 战报文案：按当日收益分档，越高越嚣张 */
 const QUOTES = {
@@ -66,14 +83,19 @@ function quoteTier(money){
   return 'tier3';
 }
 
-/* 等价物：贪心拆解，先奶茶后鸡腿 */
+/* 等价物价目表：eq = true 的参与战报等价换算（从贵到便宜拆解） */
 const GOODS = [
-  { name:'奶茶', unit:'杯', price:15 },
-  { name:'鸡腿', unit:'个', price:6  },
+  { name:'鸡腿',       unit:'个', price:6,   eq:true  },
+  { name:'疯狂星期四', unit:'份', price:9.9, eq:false },
+  { name:'奶茶',       unit:'杯', price:15,  eq:true  },
+  { name:'视频会员',   unit:'月', price:25,  eq:false },
+  { name:'盲盒',       unit:'个', price:39,  eq:false },
+  { name:'游戏皮肤',   unit:'个', price:88,  eq:false },
 ];
+function eqGoods(){ return GOODS.filter(g => g.eq).sort((a, b) => b.price - a.price); }
 function equivalence(money){
   let rest = Math.floor(money * 100) / 100, out = [];
-  for (const g of GOODS){
+  for (const g of eqGoods()){
     const n = Math.floor(rest / g.price);
     if (n > 0){ out.push(`${n} ${g.unit}${g.name}`); rest = Math.round((rest - n * g.price) * 100) / 100; }
   }
