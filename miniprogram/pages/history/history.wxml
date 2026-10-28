@@ -1,0 +1,87 @@
+<view class="page">
+  <!-- 等级卡 -->
+  <view class="card lv-card">
+    <view class="tape"></view>
+    <view class="lv-head">
+      <view class="lv-badge">{{lv.cur.icon}}</view>
+      <view class="lv-info">
+        <view class="lv-name">{{lv.cur.name}}</view>
+        <view class="lv-amount mono">¥{{totalText}} <text wx:if="{{lv.next}}" class="lv-next">/ ¥{{lv.next.min}}</text></view>
+      </view>
+      <button class="lv-help" bindtap="openLv">?</button>
+    </view>
+    <view class="xp"><view class="xp-fill" style="width:{{lv.pct}}%"></view></view>
+  </view>
+
+  <!-- 日/周/月 对比 -->
+  <view class="seg range-seg">
+    <button wx:for="{{ranges}}" wx:key="id" class="{{range === item.id ? 'on' : ''}}" bindtap="onRange" data-id="{{item.id}}">{{item.name}}</button>
+  </view>
+  <view class="stats">
+    <view class="stat"><view class="s-num mono">{{stat.dur}}</view><view class="s-label">时长</view></view>
+    <view class="stat tilt"><view class="s-num mono">¥{{stat.money}}</view><view class="s-label">收益</view></view>
+    <view class="stat"><view class="s-num mono">{{stat.eq}}</view><view class="s-label">奶茶</view></view>
+  </view>
+  <view class="cmp">
+    <text class="cmp-tag {{cmp.up ? 'up' : 'down'}}">{{cmp.up ? '▲' : '▼'}} {{cmp.pct}}%</text>
+    <text class="cmp-text">较{{cmp.prevLabel}}</text>
+    <text class="cmp-prev mono">¥{{cmp.prev}}</text>
+  </view>
+
+  <!-- 月历 -->
+  <view class="card cal-card">
+    <view class="cal-head">
+      <button class="cal-nav" bindtap="prevMonth" disabled="{{offset >= 1}}">‹</button>
+      <text class="cal-title">{{calTitle}}</text>
+      <button class="cal-nav" bindtap="nextMonth" disabled="{{offset <= 0}}">›</button>
+    </view>
+    <view class="cal-week">
+      <text wx:for="{{['一','二','三','四','五','六','日']}}" wx:key="*this">{{item}}</text>
+    </view>
+    <view class="cal-grid">
+      <view
+        wx:for="{{cells}}" wx:key="idx"
+        class="cell {{item.iso ? 'd' + item.heat : 'empty'}} {{item.isToday ? 'today' : ''}} {{item.iso === selectedIso ? 'sel' : ''}}"
+        bindtap="onDay" data-iso="{{item.iso}}"
+      >
+        <block wx:if="{{item.iso}}">
+          <text class="c-date">{{item.day}}</text>
+          <text class="c-money mono">{{item.moneyText}}</text>
+        </block>
+      </view>
+    </view>
+    <view class="cal-legend">摸得越多越黄</view>
+  </view>
+
+  <!-- 当日详情 -->
+  <view class="card detail-card">
+    <view class="cd-head">
+      <text class="cd-date">{{detail.head}}</text>
+      <text class="cd-money mono">{{detail.money}}</text>
+    </view>
+    <view class="cd-row">
+      <text>时长 <text class="mono b">{{detail.dur}}</text></text>
+      <text>≈ {{detail.eq}}</text>
+    </view>
+    <button wx:if="{{detail.has}}" class="btn-ghost" bindtap="goShare">{{detail.isToday ? '生成今日战报' : '生成当日战报'}}</button>
+  </view>
+
+  <!-- 等级说明弹窗 -->
+  <view wx:if="{{showLv}}" class="modal-mask" bindtap="closeLv">
+    <view class="modal modal-wide" catchtap="">
+      <view class="tape"></view>
+      <view class="m-title">摸鱼段位榜</view>
+      <view class="lv-list">
+        <view wx:for="{{lvList}}" wx:key="name" class="lv-row {{item.on ? 'on' : ''}}">
+          <text class="lv-row-icon">{{item.icon}}</text>
+          <view class="lv-row-main">
+            <view class="lv-row-name">{{item.name}}<text wx:if="{{item.on}}" class="lv-row-tag">当前</text></view>
+            <view class="lv-row-desc">{{item.desc}}</view>
+          </view>
+          <text class="lv-row-range mono">{{item.range}}</text>
+        </view>
+      </view>
+      <view class="m-actions"><button class="btn-big secondary" bindtap="closeLv">知道了</button></view>
+    </view>
+  </view>
+</view>

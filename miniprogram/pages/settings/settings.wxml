@@ -1,0 +1,41 @@
+<view class="page">
+  <view class="field">
+    <view class="f-label">月薪</view>
+    <input class="f-input mono" type="digit" placeholder="税前，元" value="{{salary}}" bindinput="onSalary" />
+  </view>
+  <view class="field">
+    <view class="f-label">工时</view>
+    <input class="f-input mono" type="digit" placeholder="小时 / 天" value="{{hours}}" bindinput="onHours" />
+  </view>
+  <view class="field">
+    <view class="f-label">工作制度</view>
+    <view class="seg">
+      <button wx:for="{{schemes}}" wx:key="id" class="{{scheme === item.id ? 'on' : ''}}" bindtap="onScheme" data-id="{{item.id}}">{{item.name}}</button>
+    </view>
+  </view>
+
+  <view class="card rate-card">
+    <view class="r-main mono" id="rHour">¥ {{rateHour}}</view>
+    <view class="r-sub">¥{{rateMinute}} / 分钟 · {{schemeDays}} 天</view>
+  </view>
+
+  <button class="btn-ghost" bindtap="openPrices">📒 物品价格一览</button>
+  <button class="btn-big btn-start save-btn" bindtap="onSave">保存</button>
+
+  <!-- 价目表弹窗 -->
+  <view wx:if="{{showPrices}}" class="modal-mask" bindtap="closePrices">
+    <view class="modal modal-wide" catchtap="">
+      <view class="tape"></view>
+      <view class="m-title">物品价格</view>
+      <view class="price-list">
+        <view wx:for="{{prices}}" wx:key="name" class="price-row">
+          <text class="p-name">{{item.name}}<small> / {{item.unit}}</small></text>
+          <text class="p-min">{{item.minText}}</text>
+          <text class="p-price mono">¥{{item.priceText}}</text>
+        </view>
+      </view>
+      <view class="price-note">{{priceNote}}</view>
+      <view class="m-actions"><button class="btn-big secondary" bindtap="closePrices">知道了</button></view>
+    </view>
+  </view>
+</view>

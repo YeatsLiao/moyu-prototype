@@ -1,0 +1,55 @@
+<view class="page">
+  <!-- HUD：等级 + 连摸 -->
+  <view class="hud">
+    <view class="hud-pill"><text>{{lv.icon}}</text><text class="hud-name">{{lv.cur.name}}</text></view>
+    <view class="hud-pill streak"><text>🔥</text><text>连摸 {{streak}} 天</text></view>
+  </view>
+  <view class="xp"><view class="xp-fill" style="width:{{lv.pct}}%"></view></view>
+
+  <!-- 今日战绩 -->
+  <view class="card main-card">
+    <view class="tape"></view>
+    <view class="status">
+      <view class="dot {{running ? 'live' : paused ? 'paused' : ''}}"></view>
+      <text>{{running ? '摸鱼中' : paused ? '已暂停' : '今日战绩'}}</text>
+    </view>
+    <view class="clock mono">{{clock}}</view>
+    <view class="money mono">¥ {{money}}</view>
+    <view class="eq">≈ {{eq}}</view>
+    <view class="fish">🐟</view>
+  </view>
+
+  <!-- 赛道 -->
+  <view class="types">
+    <view
+      wx:for="{{types}}" wx:key="id"
+      class="type-card {{item.id === typeId ? 'on' : ''}} {{running || paused ? 'lock' : ''}}"
+      bindtap="onPick" data-id="{{item.id}}"
+    >
+      <text class="t-icon">{{item.icon}}</text>
+      <text class="t-name">{{item.name}}</text>
+      <text class="t-coef">×{{item.coef}}</text>
+    </view>
+  </view>
+
+  <!-- 主按钮 -->
+  <button class="btn-big {{running ? 'btn-stop' : 'btn-start'}}" bindtap="onMain">
+    {{running ? '▮▮ 暂停' : paused ? '▶ 继续摸鱼' : '▶ 开始摸鱼'}}
+  </button>
+  <button wx:if="{{running || paused}}" class="btn-ghost" bindtap="onEnd">收工结算</button>
+
+  <!-- 结算弹窗 -->
+  <view wx:if="{{showSettle}}" class="modal-mask" bindtap="closeSettle">
+    <view class="modal" catchtap="">
+      <view class="tape"></view>
+      <view class="m-title">摸鱼结算</view>
+      <view class="m-money mono">¥ {{settle.money}}</view>
+      <view class="m-dur">{{settle.dur}}</view>
+      <view class="m-quip">“{{settle.quip}}”</view>
+      <view class="m-actions">
+        <button class="btn-big secondary" bindtap="closeSettle">再来</button>
+        <button class="btn-big btn-start" bindtap="goShare">出战报</button>
+      </view>
+    </view>
+  </view>
+</view>

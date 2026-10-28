@@ -1,0 +1,29 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/history/history",
+    "pages/settings/settings",
+    "pages/share/share"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#FBF6EA",
+    "navigationBarTitleText": "摸鱼战绩计算器",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FBF6EA"
+  },
+  "tabBar": {
+    "color": "#8A8375",
+    "selectedColor": "#2A2723",
+    "backgroundColor": "#FBF6EA",
+    "borderStyle": "black",
+    "list": [
+      { "pagePath": "pages/home/home", "text": "首页" },
+      { "pagePath": "pages/history/history", "text": "战绩" },
+      { "pagePath": "pages/settings/settings", "text": "设置" }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "permission": {
+    "scope.userPhotos": { "desc": "用于把摸鱼战报保存到你的相册" }
+  }
+}

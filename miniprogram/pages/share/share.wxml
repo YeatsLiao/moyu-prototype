@@ -1,0 +1,42 @@
+<view class="page">
+  <!-- 战报卡 -->
+  <view class="card report">
+    <view class="tape"></view>
+    <view class="stamp">咸鱼<br/>认证</view>
+    <view class="rc-brand">摸 鱼 战 绩 计 算 器</view>
+    <view class="rc-date">{{dateText}}</view>
+    <view class="rc-money mono"><text class="rc-y">¥</text>{{money}}</view>
+    <view class="rc-dur">{{dur}}</view>
+    <view class="rc-eq">≈ {{eq}}</view>
+    <button class="price-entry" bindtap="openPrices">价目表 ›</button>
+    <view class="rc-divider"></view>
+    <view class="rc-quip">“{{quip}}”</view>
+    <view class="rc-foot">
+      <view class="rc-level">{{lvIcon}} {{lvName}}</view>
+      <text class="rc-fish">🐟</text>
+    </view>
+  </view>
+
+  <button class="btn-ghost" bindtap="onQuip">换一句</button>
+  <button class="btn-big btn-start save-btn" bindtap="onSave">保存图片</button>
+
+  <!-- 离屏画布：生成 PNG -->
+  <canvas type="2d" id="reportCanvas" class="offscreen"></canvas>
+
+  <!-- 价目表弹窗 -->
+  <view wx:if="{{showPrices}}" class="modal-mask" bindtap="closePrices">
+    <view class="modal modal-wide" catchtap="">
+      <view class="tape"></view>
+      <view class="m-title">物品价格</view>
+      <view class="price-list">
+        <view wx:for="{{prices}}" wx:key="name" class="price-row">
+          <text class="p-name">{{item.name}}<small> / {{item.unit}}</small></text>
+          <text class="p-min">{{item.minText}}</text>
+          <text class="p-price mono">¥{{item.priceText}}</text>
+        </view>
+      </view>
+      <view class="price-note">{{priceNote}}</view>
+      <view class="m-actions"><button class="btn-big secondary" bindtap="closePrices">知道了</button></view>
+    </view>
+  </view>
+</view>

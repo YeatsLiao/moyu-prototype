@@ -1,0 +1,92 @@
+/* 全局样式：咸鱼涂鸦手绘风 */
+page {
+  --paper: #FBF6EA;
+  --paper2: #F3EAD6;
+  --card: #FFFDF6;
+  --ink: #2A2723;
+  --ink-soft: #8A8375;
+  --hi: #FFE66D;
+  --sea: #8FD3F4;
+  --coral: #FF6B5B;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 28rpx;
+}
+
+/* 卡片 / 胶带 */
+.card {
+  position: relative;
+  background: var(--card);
+  border: 4rpx solid var(--ink);
+  border-radius: 32rpx 12rpx 36rpx 16rpx / 16rpx 36rpx 12rpx 32rpx;
+  padding: 32rpx;
+  box-shadow: 6rpx 6rpx 0 var(--ink);
+}
+.tape {
+  position: absolute; top: -18rpx; left: 50%;
+  width: 120rpx; height: 36rpx;
+  transform: translateX(-50%) rotate(-3deg);
+  background: rgba(255, 230, 109, .75);
+  border-left: 2rpx dashed rgba(42,39,35,.35);
+  border-right: 2rpx dashed rgba(42,39,35,.35);
+}
+
+/* 大按钮 */
+.btn-big {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 128rpx;
+  border: 6rpx solid var(--ink);
+  border-radius: 44rpx 22rpx 48rpx 26rpx / 26rpx 48rpx 22rpx 44rpx;
+  font-size: 40rpx; font-weight: 700; letter-spacing: 4rpx;
+  box-shadow: 8rpx 8rpx 0 var(--ink);
+}
+.btn-big:active { transform: translate(6rpx, 6rpx); box-shadow: none; }
+.btn-start { background: var(--hi); color: var(--ink); }
+.btn-stop { background: var(--coral); color: #fff; }
+.btn-ghost {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 92rpx; margin-top: 20rpx;
+  background: var(--card); border: 4rpx dashed var(--ink);
+  border-radius: 18rpx 36rpx 14rpx 30rpx / 30rpx 14rpx 36rpx 18rpx;
+  font-size: 28rpx; font-weight: 700;
+  box-shadow: 6rpx 6rpx 0 var(--ink);
+}
+.btn-ghost:active { transform: translate(4rpx, 4rpx); box-shadow: none; }
+button::after { border: none; }
+button { background: none; padding: 0; line-height: inherit; }
+
+/* 弹窗 */
+.modal-mask {
+  position: fixed; inset: 0; z-index: 40;
+  background: rgba(42,39,35,.45);
+  display: flex; align-items: center; justify-content: center;
+  padding: 44rpx;
+}
+.modal {
+  position: relative; width: 100%;
+  background: var(--card); border: 6rpx solid var(--ink);
+  border-radius: 44rpx 22rpx 48rpx 26rpx / 26rpx 48rpx 22rpx 44rpx;
+  padding: 52rpx 36rpx 36rpx; text-align: center;
+  box-shadow: 8rpx 8rpx 0 var(--ink);
+}
+.modal-wide { text-align: left; max-height: 80vh; overflow-y: auto; }
+.modal-wide .m-title { text-align: center; }
+.m-title { font-size: 34rpx; font-weight: 700; letter-spacing: 4rpx; }
+.m-actions { display: flex; gap: 20rpx; margin-top: 28rpx; }
+.m-actions .btn-big { height: 100rpx; font-size: 30rpx; flex: 1; border-width: 4rpx; }
+.secondary { background: var(--card); color: var(--ink); }
+
+/* segment */
+.seg { display: flex; gap: 12rpx; }
+.seg button {
+  flex: 1; border: 4rpx solid var(--ink); background: var(--card);
+  color: var(--ink); font-size: 28rpx; font-weight: 700;
+  padding: 20rpx 0;
+  border-radius: 18rpx 36rpx 14rpx 30rpx / 30rpx 14rpx 36rpx 18rpx;
+  box-shadow: 6rpx 6rpx 0 var(--ink);
+}
+.seg button:active { transform: translate(4rpx,4rpx); box-shadow: none; }
+.seg button.on { background: var(--hi); }
+
+.mono { font-family: "Courier New", monospace; font-variant-numeric: tabular-nums; }
